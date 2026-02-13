@@ -20,38 +20,41 @@ int main(int argc, char **argv)
     Student student;
     double average;
 
-    
+    //Allocate memory for the names
     student.f_name = new char[128];
     student.l_name = new char[128];
 
     // Sequence of user input -> store in fields of `student`
+
+    //Get Student ID
     std::string id_msg = "Please enter the student's id number: ";
 
     student.id = promptInt(id_msg, 1, 999999999);
 
+    //Get First Name
     std::cout << "Please enter the student's first name: ";
     std::cin >> student.f_name;
     std::cin.ignore();
 
-
+    //Get Last Name
     std::cout << "Please enter the student's last name: ";
     std::cin >> student.l_name;
     std::cin.ignore();
 
-
+    //Get Number of Assignments
     std::string assign_msg = "Please enter how many assignments were graded: ";
     student.n_assignments = promptInt(assign_msg, 1, 134217728);
     std::cout << std::endl;
 
-
-    double* grade_list = new double[student.n_assignments];
+    //Allocate memory for grades
+    double *grade_list = new double[student.n_assignments];
     double grade;
 
     for(int i = 0; i < student.n_assignments; i++){
         std::string grade_msg =  "Please enter grade for assignment " + std::to_string(i) + ": ";
         
         
-        grade = promptDouble(grade_msg, 0, 100.0);
+        grade = promptDouble(grade_msg, 0, 1000.0);
         grade_list[i] = grade;
         
     }
@@ -59,6 +62,7 @@ int main(int argc, char **argv)
 
 
     // Call `CalculateStudentAverage(???, ???)`
+    //pass address of student and address of average
     calculateStudentAverage(&student, &average);
 
     // Output `average`
@@ -66,6 +70,7 @@ int main(int argc, char **argv)
     std::cout << "Student: " << student.f_name << " " << student.l_name << " [" << student.id << "]" << std::endl;
     std::cout << "  Average grade: " << average << std::endl;
 
+    //Cleanup 
     delete[] student.grades;
     delete[] student.f_name;
     delete[] student.l_name;
@@ -88,6 +93,7 @@ int promptInt(std::string message, int min, int max)
 
         std::getline(std::cin, input);
      
+        //if user hit enter
         if(input.empty()){
             continue;
         }
@@ -95,16 +101,19 @@ int promptInt(std::string message, int min, int max)
         int num = 0;
 
         bool isNum = true;
+        //check if it is a valid number
         for (char c : input){
             if (c < '0' || c > '9'){
                 isNum = false;
                 break;
             }
+            //convert char to int
             int digit = c - '0';
             num = (num * 10) + digit;
 
         }
         if(isNum){
+            //check if number meets the range
             if(num >= min && num <= max){
                 return num;
             } else{
@@ -128,13 +137,14 @@ double promptDouble(std::string message, double min, double max)
 {
     // Code to prompt user for a double
     std::string input;
-    double num;
+    double num = 0.0;
+
     while (true){
         std::cout << message;
         
         std::getline(std::cin, input);
 
-
+        //check if it is a valid decimal number
         bool isNum = true;
         for (char c : input){
             if (c == '.'){
@@ -150,6 +160,7 @@ double promptDouble(std::string message, double min, double max)
         }
 
         if(isNum){
+            // string to double
             double digit = 0.0;
             double divisor = 1.0;
             bool dot = false;
@@ -161,12 +172,15 @@ double promptDouble(std::string message, double min, double max)
                 }
                 int digit = c - '0';
                 if (!dot){
+                    //whole number
                 num = (num * 10) + digit;
                 }else{
+                    //decimal part
                     divisor = divisor * 10.0;
                     num = num + (digit / divisor);
                 }
             }
+            //check range
             if(num >= min && num <= max){
                 return num;
             } else{
@@ -194,10 +208,12 @@ void calculateStudentAverage(void *object, double *avg)
     Student *s = (Student*)object;
 
     double total = 0;
+
+    //sum up all grades
     for(int i = 0; i < s->n_assignments; i++){
         total = total + s->grades[i];
 
     }
-
+    //calculate average
     *avg = std::round((total / s->n_assignments) * 10.0 )/ 10.0;
 }
